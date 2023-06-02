@@ -1,0 +1,259 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <style>
+            body{
+                background-color: black;
+                color: chartreuse;
+            }
+        </style>
+    </head>
+    <body>
+        <pre>
+            <code>
+                #Jo-ken-pô
+# Primeiramente utilizaremos a função randint da biblioteca random para sortear um número inteiro
+from random import randint
+# Agora definiremos as jogadas
+jogadas = ("Pedra" , "Papel" , "Tesoura")
+# Escolher modo de jogo
+gamemode = int(input("Escolha o modo de jogo, pressione: [1] para JOGADOR X PC [2] Para JOGADOR X JOGADOR [3] Para PC X PC: "))
+# Placar do jogador 1
+p1win = 0
+p1lose = 0
+p1tie = 0
+
+# Placar do jogador 2
+p2win = 0
+p2lose = 0
+p2tie = 0
+
+#Placar do PC 1
+pc1win = 0
+pc1lose = 0
+pc1tie = 0
+
+# Placar do PC 2
+pc2win = 0
+pc2lose = 0
+pc2tie = 0
+
+# Player vs PC
+if gamemode == 1:
+    # Opção para replay
+    playagain = 4
+    while (playagain == 4):
+        # Posteriormente, faremos as jogadas do computador
+        pc = randint(0,2)
+        # Vamos apresentar as jogadas ao jogador
+        print("Suas jogadas podem ser: [0] Pedra [1] Papel [2] Tesoura")
+        # Jogada do jogador
+        player = int(input("Faça sua jogada: "))
+        # Imprimir as jogadas do PC e do Player
+        print(f"O computador escolheu: {jogadas[pc]}")
+        print(f"Player escolheu: {jogadas[player]}")
+        # Condicionais
+        # PC Jogou pedra
+        if pc == 0:
+            if player == 0:
+                print("EMPATE!")
+                p1tie += 1
+                pc1tie += 1
+            elif player == 1:
+                print("PLAYER VENCE!")
+                p1win += 1
+                pc1lose += 1
+            elif player == 2:
+                print("PC VENCEU!")
+                p1lose += 1
+                pc1win += 1
+            else:
+                print("JOGADA INVÁLIDA")
+        # PC jogou papel
+        elif pc == 1:
+            if player == 0:
+                print("PC VENCEU!")
+                p1lose += 1
+                pc1win += 1
+            elif player == 1:
+                print("EMPATE!")
+                p1tie += 1
+                pc1tie += 1
+            elif player == 2:
+                print("PLAYER VENCEU!")
+                p1win += 1
+                pc1lose += 1
+            else:
+                print("JOGADA INVÁLIDA")
+        # PC jogou tesoura
+        elif pc == 2:
+            if player == 0:
+                print("PLAYER VENCEU!")
+                p1win += 1
+                pc1lose += 1
+            elif player == 1:
+                print("COMPUTADOR VENCEU")
+                p1lose += 1
+                pc1win += 1
+            elif player == 2:
+                print("EMPATE!")
+            else:
+                print("JOGADA INVÁLIDA")
+        else:
+            print("JOGADA INVÁLIDA")
+        playagain = int(input("Você quer jogar novamente? Digite [4] para SIM ou [6] para NÃO: "))
+        if playagain != 4:
+            print("Fim de jogo")
+            print(("*")* 30) # para fins puramente estéticos, a fim de separar a mensagem "fim de jogo" do placar
+            print("PLACAR: ") #demonstrativo de vitórias, empates e derrotas de cada jogador, repetido a cada modalidade de jogo
+            print(f"Jogador 1: {p1win} vitórias {p1lose} derrotas {p1tie} empates")
+            print(f"PC: {pc1win} vitórias {pc1lose} derrotas {pc1tie} empates")
+
+# Player vs Player
+elif gamemode == 2:
+    # Opção para replay
+    playagain = 4
+    while (playagain == 4):
+        # Vamos apresentar as jogadas ao jogador
+        print("Suas jogadas podem ser: [0] Pedra [1] Papel [2] Tesoura")
+        # Jogada do jogador 1
+        player1= int(input("Faça sua jogada: "))
+        # Jogada do jogador 2
+        player2 = int(input("Faça sua jogada: "))
+        print(f"Player 1 escolheu: {jogadas[player1]}")
+        print(f"Player 2 escolheu: {jogadas[player2]}")
+
+        # Condicionais
+        # Player 1 Jogou pedra
+        if player1== 0:
+            if player2 == 0:
+                print("EMPATE!")
+                p1tie += 1
+                p2tie += 1
+            elif player2 == 1:
+                print("PLAYER 2 VENCEU!")
+                pc1lose += 1
+                pc2win += 1
+            elif player2 == 2:
+                print("PLAYER 1 VENCEU!")
+                p1win += 1
+                pc2lose += 1
+            else:
+                print("JOGADA INVÁLIDA")
+
+        # Player 1 jogou papel
+        elif player1 == 1:
+            if player2 == 0:
+                print("PLAYER 1 VENCEU!")
+                p1win += 1
+                p2lose += 1
+            elif player2 == 1:
+                print("EMPATE!")
+                p1tie += 1
+                p2tie += 1
+            elif player2 == 2:
+                print("PLAYER 2 VENCEU!")
+                p1lose =+ 1
+                p2win +=1
+            else:
+                print("JOGADA INVÁLIDA")
+
+        # Player 1 jogou tesoura
+        elif player1 == 2:
+            if player2 == 0:
+                print("PLAYER 2 VENCEU!")
+                p1lose += 1
+                p2win += 1
+            elif player2 == 1:
+                print("PLAYER 1 VENCEU")
+                p1win += 1
+                p2lose += 1
+            elif player2 == 2:
+                print("EMPATE!")
+                p1tie += 1
+                p2tie += 1
+            else:
+                print("JOGADA INVÁLIDA")
+        else:
+            print("JOGADA INVÁLIDA!")
+        playagain = int(input("Você quer jogar novamente? Digite [4] para SIM ou [6] para NÃO: "))
+        if playagain != 4:
+            print("FIM DE JOGO")
+            print(("*")* 30) # para fins puramente estéticos, a fim de separar a mensagem "fim de jogo" do placar
+            print("PLACAR: ") #demonstrativo de vitórias, empates e derrotas de cada jogador, repetido a cada modalidade de jogo
+            print(f"Jogador 1: {p1win} vitórias {p1lose} derrotas {p1tie} empates")
+            print(f"Jogador 2: {p2win} vitórias {p2lose} derrotas {p2tie} empates")
+
+# PC vs PC
+elif gamemode == 3:
+    # Opção para replay
+    playagain = 4
+    while (playagain == 4):
+        # jogadas dos computadores
+        pc1 = randint(0, 2)
+        pc2 = randint(0, 2)
+        print(f"O computador 1 escolheu: {jogadas[pc1]}")
+        print(f"O computador 2 escolheu: {jogadas[pc2]}")
+        # Condicionais
+        # PC 1 Jogou pedra
+        if pc1 == 0:
+            if pc2 == 0:
+                print("EMPATE!")
+                pc1tie += 1
+                pc2tie += 1
+            elif pc2 == 1:
+                print("PC 2 VENCE!")
+                pc1lose += 1
+                pc2win += 1
+            elif pc2 == 2:
+                print("PC 1 VENCEU!")
+                pc1win += 1
+                pc2lose += 1
+            else:
+                print("JOGADA INVÁLIDA")
+        # PC 1 jogou papel
+        elif pc1 == 1:
+            if pc2 == 0:
+                print("PC 1 VENCEU!")
+                pc1win += 1
+                pc2lose += 1
+            elif pc2 == 1:
+                print("EMPATE!")
+                pc1tie += 1
+                pc2tie += 1
+            elif pc2 == 2:
+                print("PC 2 VENCEU!")
+                pc1lose += 1
+                pc2win += 1
+            else:
+                print("JOGADA INVÁLIDA")
+        # PC jogou tesoura
+        elif pc1 == 2:
+            if pc2 == 0:
+                print("PC 2 VENCEU!")
+                pc1lose += 1
+                pc2win += 1
+            elif pc2 == 1:
+                print("PC 1 VENCEU")
+                pc1win += 1
+                pc2lose += 1
+            elif pc2 == 2:
+                print("EMPATE!")
+                pc1tie += 1
+                pc2tie += 1
+            else:
+                print("JOGADA INVÁLIDA")
+        else:
+            print("JOGADA INVÁLIDA")
+        playagain = int(input("Você quer jogar novamente? Digite [4] para SIM ou [6] para NÃO: "))
+        if playagain != 4:
+            print("Fim de jogo")
+            print(("*")* 30) # para fins puramente estéticos, a fim de separar a mensagem "fim de jogo" do placar
+            print("PLACAR: ") #demonstrativo de vitórias, empates e derrotas de cada jogador, repetido a cada modalidade de jogo
+            print(f"PC 1: {pc1win} vitórias {pc1lose} derrotas {pc1tie} empates")
+            print(f"PC 2: {pc2win} vitórias {pc2lose} derrotas {pc2tie} empates")
+
+            </code>
+        </pre>
+    </body>
+</html>

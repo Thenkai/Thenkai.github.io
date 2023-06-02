@@ -1,0 +1,253 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <style>
+            body{
+                background-color: black;
+                color: chartreuse;
+            }
+        </style>
+    </head>
+    <body>
+        <pre>
+            <code>
+                // Nicolas Lamback de Paulo
+import javax.swing.JOptionPane;
+import java.util.ArrayList;
+import java.io.File;
+import processing.video.*;
+
+//Scroll
+int windowWidth = 1280; // largura da janela
+int windowHeight = 720; // altura da janela
+int contentHeight = 0; // altura do conteúdo da tela
+int scrollBarWidth = 10; // largura da barra de rolagem
+int scrollY = 0; // define a posição de rolagem vertical inicial
+
+//Playlist
+String lastPlaylist = "";
+int sizeButton = 100;
+ArrayList<String> playlists = new ArrayList<String>();
+ArrayList<Integer> position = new ArrayList<Integer>();
+ArrayList<Integer> textPosition = new ArrayList<Integer>();
+
+//Importar músicas
+String dataPath;
+ArrayList<Movie> movies;
+
+int tela = 1; // tela atual
+int video = 0; // 
+int playpause = 0; // estado do vídeo
+int volta = 0; // retroceder vídeo
+
+float angle = 0;
+float angleSpeed = 0.02;
+float size = 50;
+float numSegments = 10;
+
+void setup(){
+  windowResize(windowWidth, windowHeight);
+  // criar um objeto File com o caminho da pasta "data"
+  dataPath = sketchPath("data");
+  File dataFolder = new File(dataPath);
+
+  File[] files = dataFolder.listFiles(); // listar todos os arquivos e pastas dentro da pasta "data"
+  
+  String[] ultimaPlay = loadStrings("arquivo.txt");
+  
+  // adicionar botão de "Última Playlist"
+  position.add(50);
+  textPosition.add(sizeButton);
+  playlists.add("Última Playlist");
+  
+  // adicionar os nomes das pastas de muisicas em um ArrayList e as posições dos botões e de texto
+  for (int k = 0; k < files.length; k++) {
+    if (files[k].isDirectory()) {
+      playlists.add(files[k].getName());
+      position.add(position.get(k) + sizeButton + 10);
+      textPosition.add(textPosition.get(k) + sizeButton + 10);
+    }
+  }
+  
+  // adicionar botão de "Adicionar Playlist"
+  position.add(position.get(playlists.size() - 1) + sizeButton + 10);
+  textPosition.add((textPosition.get(playlists.size() - 1) + sizeButton + 10));
+  playlists.add("Adicionar Playlist");
+  contentHeight = position.get(position.size() - 1) + sizeButton + 10; // altura do conteúdo da tela
+  
+  textAlign(CENTER, CENTER);
+  
+}
+
+void draw() {
+  if (tela == 1) {
+    rectMode(CORNER);
+    background(50); // Define a cor de fundo
+    noStroke(); // remove a borda dos retângulos
+    
+    // calcular a posição da barra de rolagem
+    float scrollBarHeight = windowHeight * windowHeight / (float)contentHeight;
+    float scrollBarY = map(scrollY, 0, contentHeight - windowHeight, 0, windowHeight - scrollBarHeight);
+  
+    // mostrar o conteúdo
+    for (int i = 0; i < position.size(); i++) {
+      if (mouseOverRect(0, position.get(i) - scrollY, width, sizeButton)) {
+        fill(150);
+      }
+      else {
+        fill(180);}
+        
+      // desenhar o conteúdo da tela
+      rect(0, position.get(i) - scrollY, width, sizeButton);
+      textSize(20);
+      fill(#330F1D);
+      text(playlists.get(i), width / 2 - scrollBarWidth, textPosition.get(i) - scrollY);
+    }
+    // desenhar a barra de rolagem
+    fill(50);
+    rect(width - scrollBarWidth, 0, scrollBarWidth, height);
+    fill(100);
+    rect(width - scrollBarWidth, scrollBarY, scrollBarWidth, scrollBarHeight, 8);
+  } else if (tela == 2) {
+    volta += 1;
+    background(5);
+    image(movies.get(video), 128, 0, 1024, 576);
+    stroke(0);
+    rectMode(CENTER);
+    fill(#6A6969); rect(540,700,100,40); fill(#39ff14); text("<<", 540, 700); //rewind
+    if (playpause == 0) {
+      fill(#6A6969); rect(640,700,100,40); fill(#39ff14); text(">", 640, 700); //play
+    } else if (playpause == 1) {
+      fill(#6A6969); rect(640,700,100,40); fill(#39ff14); text("II", 640, 700); // pause
+    }
+    fill(#6A6969); rect(740,700,100,40); fill(#39ff14); text(">>", 740, 700); //foward
+    fill(#6A6969); rect(50,30,100,60); fill(#39ff14); text("Voltar", 50, 30); //Voltar
+    fill(#6A6969); rect(640, 660, width, 20); //barra de navegação fundo
+    fill(#39ff14); rect(0, 660, (movies.get(video).time() / movies.get(video).duration()) * width, 10); //barra de navegação que preenche
+     translate(width/2, height/2);
+
+    // Desenha o disco de loading
+    fill(#39ff14);
+    stroke(0);
+    strokeWeight(5);
+    for (int i = 0; i < numSegments; i++) {
+      float segmentAngle = TWO_PI/numSegments;
+      float startAngle = i*segmentAngle + angle;
+      float endAngle = (i+0.5)*segmentAngle + angle;
+      arc(-600, 260, size, size, startAngle, endAngle);
+    }
+    noStroke();
+    strokeWeight(1);
+    // Rotaciona o disco de loading
+    angle += angleSpeed;
+    translate(0,0);
+  }
+}
+
+// mover a tela quando a roda do mouse é rolada
+void mouseWheel(processing.event.MouseEvent event) {
+  scrollY += event.getCount() * 20;
+  scrollY = constrain(scrollY, 0, contentHeight - windowHeight);
+}
+
+
+// verificar se o mouse está sobre um botão
+boolean mouseOverRect(int x, int y, int width, int height) {
+  if (mouseX >= x && mouseX <= x+width && mouseY >= y && mouseY <= y+height) {
+    return true;
+  } 
+  else {
+    return false;
+  }
+}
+
+
+// identificar quando um botão foi pressionado
+void mouseClicked() {
+  if (tela == 1) {
+    if (mouseOverRect(0, position.get(position.size() - 1), width, sizeButton)) { // playlist nova
+      System.out.println("playlist nova");
+      String nomePlayNova = "playlist" + (Integer.toString(playlists.size()-1));
+      System.out.println("sera" + nomePlayNova);
+      File playNova = new File(dataPath, nomePlayNova);
+      if (playNova.mkdir()) {
+        System.out.println(nomePlayNova);
+      } else {
+        System.out.println("n");
+      }
+    }
+    if (mouseOverRect(0, position.get(0), width, sizeButton)) { // ultima playlist
+      if (lastPlaylist.equals("")) {
+        System.out.println("Nenhuma Playlist ouvida antes!");
+      } else {
+        System.out.println(lastPlaylist);
+      }
+    }
+    for (int j = 1; j < playlists.size() - 1; j++){
+      if (mouseOverRect(0, position.get(j), width, sizeButton)) {
+        System.out.println(playlists.get(j));
+        
+        movies = new ArrayList<Movie>();
+        String playlistPath = dataPath;
+        playlistPath = playlistPath + "\\" + playlists.get(j);
+          
+        File playlistFolder = new File(playlistPath);         
+        File[] files = playlistFolder.listFiles();
+        for (File file : files) {
+          if (file.isFile() && file.getName().endsWith(".mp4")) {
+            Movie movie = new Movie(this, file.getAbsolutePath());
+            movies.add(movie);
+            tela = 2;
+          }
+        }
+      System.out.println(movies);
+      //ultimaPlay[0].set(0, String.format(i)); // Antonio e Gabriel
+      //saveStrings("arquivo.txt", ultimaPlay[]);
+      }
+    }
+  } else if (tela == 2) {  //botões por Jonas e Igor
+    if (mouseX > 590 && mouseX < 690 && mouseY > 680 && mouseY < 720) { //botão play pause
+      if (playpause == 0) {
+        movies.get(video).play();
+        playpause = 1;
+      } else if (playpause == 1) {
+        movies.get(video).pause();
+        playpause = 0;
+      }
+    } else if (mouseX > 490 && mouseX < 590 && mouseY > 680 && mouseY < 720) { //rewind - volta o vídeo do começo ou volta 1 vídeo
+      if (volta < 60) {
+        if (video != 0) {
+          movies.get(video).pause();
+          video -= 1;
+          movies.get(video).play();
+        }
+      }
+      movies.get(video).jump(0);
+      volta = 0;
+    } else if (mouseX > 690 && mouseX < 790 && mouseY > 680 && mouseY < 720) { //foward - pausa o vídeo que está tocando e passa para o próximo
+      movies.get(video).pause();
+      movies.get(video).jump(0);
+      video += 1;
+      if (video == movies.size()) {
+        video = 0;
+      }
+      movies.get(video).play();
+    } else if (mouseY > 650 && mouseY < 670) { // navegação pelo vídeo
+      println(movies.get(video).duration());
+      movies.get(video).jump((float(mouseX)/float(width))*2*movies.get(video).duration());
+    } else if (mouseX < 100 && mouseY < 60) {
+      movies.get(video).pause();
+      movies.get(video).jump(0);
+      tela = 1;
+      playpause = 0;
+    }
+  }
+}
+
+void movieEvent(Movie m) {
+  m.read();
+}
+            </code>
+        </pre>
+    </body>
+</html>

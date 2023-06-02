@@ -1,0 +1,79 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <style>
+            body{
+                background-color: black;
+                color: chartreuse;
+            }
+        </style>
+    </head>
+    <body>
+        <pre>
+            <code>
+                # Jogo da Forca
+print("Jogo da Forca - Edição Jurídica")
+print("Advinhe o termo jurídico em seis tentativas")
+
+import random as rd
+lista = ["ADVOGADO","JUIZ","PROMOTOR","DESEMBARGADOR","PROCURADOR","EXORDIAL", "RECURSO", "CONDENADO", "PENA", "SENTENÇA"]
+
+# Sortear uma palavra da lista
+def random_word(lista):
+    tamanho = len(lista)
+    sorteio = rd.randint(1, tamanho)
+    random_word = lista[sorteio]
+    return random_word
+
+# Localizar posição de uma letra dentro da palavra
+def localizar(texto, palavra):
+    posicoes = []
+    for i in range(0, len(texto)):
+        if texto[i] == palavra:
+            posicoes.append(i)
+    return posicoes
+
+word = random_word(lista)
+print(f"DICA: A palavra tem {len(word)} letras")
+
+chances = 0
+secret_word = list("_" * len(word))
+while chances <= 6:
+    input_letter = input("Digite UMA letra: ").upper()
+    if input_letter in word:
+        print(f"A letra {input_letter} existe na palavra")
+        posicao = localizar(word, input_letter)
+        for i in posicao:
+            secret_word[i] = input_letter
+        print("".join(secret_word))
+        option = input("Você já sabe qual é a palavra? Digite 4 para SIM ou 6 para NÃO: ")
+        if option == "4":
+            answer = input("Digite a palavra: ")
+            if answer.upper() == word:
+                print("PARABÉNS VOCÊ ACERTOU")
+                break
+            else:
+                print(f"SINTO MUITO, MAS VOCÊ ERROU, A PALAVRA CORRETA É {word}")
+                break
+    else:
+        print(f"A letra {input_letter} NÃO existe na palavra")
+        print(secret_word)
+        option = input("VocÊ já sabe qual é a palavra? Digite 4 para SIM ou 6 para NÃO: ")
+        if option == "4":
+            answer = input("Digite a palavra: ")
+            if answer.upper() == word:
+                print("PARABÉNS VOCÊ ACERTOU")
+                break
+            else:
+                print(f"SINTO MUITO, MAS VOCÊ ERROU A PALAVRA CORRETA É {word}")
+                break
+        else:
+            print(f"Você ainda tem mais {chances-1} chances")
+chances += 1
+if chances >= 5:
+    print("GAME OVER")
+    print(f"A palavra correta era: {word}")
+            </code>
+        </pre>
+    </body>
+</html>
